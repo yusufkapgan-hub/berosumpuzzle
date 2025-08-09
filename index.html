@@ -5,9 +5,18 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Yapboz — Oyna</title>
   <style>
-    html,body { height:100%; margin:0; }
-    iframe { border:0; width:100%; height:100%; display:block; }
-
+    html,body {
+      height:100%;
+      margin:0;
+      background: black;
+    }
+    iframe {
+      border:0;
+      width:100%;
+      height:100%;
+      display:block;
+    }
+    
     /* Sağ üst buton */
     #finishBtn {
       position: fixed;
@@ -22,7 +31,6 @@
       font-size: 14px;
       z-index: 1000;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      transition: background 0.3s ease;
     }
     #finishBtn:hover {
       background: #e8435c;
@@ -65,35 +73,35 @@
       border-radius: 8px;
       cursor: pointer;
       font-size: 15px;
-      transition: background 0.3s ease;
     }
     .note-box button:hover {
       background: #e8435c;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
     }
 
-    /* Sayfa geçiş katmanı */
-    #fadeLayer {
+    /* Geçiş ekranı (fade) */
+    #transition {
       position: fixed;
       inset: 0;
-      background: black; /* Siyah geçiş */
-      opacity: 1; /* İlk açılışta siyah */
+      background: black;
+      opacity: 0;
+      pointer-events: none;
       z-index: 2000;
       transition: opacity 0.8s ease;
     }
-    #fadeLayer.fade-out {
-      opacity: 0; /* Açılırken görünür yap */
-    }
-    #fadeLayer.fade-in {
-      opacity: 1; /* Kapanırken siyah */
+    #transition.show {
+      opacity: 1;
+      pointer-events: auto;
     }
   </style>
 </head>
 <body>
+  <!-- Geçiş katmanı -->
+  <div id="transition"></div>
+
   <!-- Bitir butonu -->
   <button id="finishBtn">Bitir</button>
 
@@ -105,33 +113,41 @@
     <div class="note-box">
       <h2>💖 Tebrikler!</h2>
       <p>Yapbozu tamamladın. Sana söylemek istediğim küçük bir şey var...</p>
-      <button id="goNextBtn">Devam Et</button>
+      <button onclick="goToPage('bitis.html')">Devam Et</button>
     </div>
   </div>
 
-  <!-- Geçiş katmanı -->
-  <div id="fadeLayer"></div>
-
   <script>
-  const overlay = document.getElementById('overlay');
-  const fadeLayer = document.getElementById('fadeLayer');
-
-  function goToBitis() {
-    fadeLayer.classList.remove('fade-out');
-    fadeLayer.classList.add('fade-in');
+  // Sayfa açıldığında siyah katmanı fade-in yap
+  window.addEventListener("load", () => {
+    const transition = document.getElementById("transition");
+    transition.style.opacity = 1; // İlk başta siyah
     setTimeout(() => {
-      window.location.href = 'bitis.html';
+      transition.style.transition = "opacity 0.8s ease";
+      transition.style.opacity = 0; // Yavaşça aç
+    }, 50);
+  });
+
+  function goToPage(url) {
+    const transition = document.getElementById("transition");
+    transition.classList.add("show"); // Fade-out başlat
+    setTimeout(() => {
+      window.location.href = url; // Geçiş tamamlanınca yönlendir
     }, 800);
   }
 
-  document.getElementById('finishBtn').addEventListener('click', goToBitis);
-  document.getElementById('goNextBtn').addEventListener('click', goToBitis);
+  document.getElementById("finishBtn").addEventListener("click", () => {
+    goToPage("bitis.html");
+  });
 
-  // Yapboz tamamlanınca notu göster
   (function(){
+    const overlay = document.getElementById('overlay');
+
     window.addEventListener('message', function(event){
       try {
-        if (!event.origin || event.origin.indexOf('jigsawplanet.com') === -1) return;
+        if (!event.origin || event.origin.indexOf('jigsawplanet.com') === -1) {
+          return;
+        }
       } catch(e) { return; }
 
       const data = event.data;
@@ -153,13 +169,6 @@
       }
     }, false);
   })();
-
-  // Sayfa açılışında fade-in efekti
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      fadeLayer.classList.add('fade-out');
-    }, 50);
-  });
   </script>
 </body>
 </html>
