@@ -7,7 +7,7 @@
   <style>
     html,body { height:100%; margin:0; }
     iframe { border:0; width:100%; height:100%; display:block; }
-    
+
     /* Sağ üst buton */
     #finishBtn {
       position: fixed;
@@ -22,6 +22,7 @@
       font-size: 14px;
       z-index: 1000;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: background 0.3s ease;
     }
     #finishBtn:hover {
       background: #e8435c;
@@ -64,19 +65,36 @@
       border-radius: 8px;
       cursor: pointer;
       font-size: 15px;
+      transition: background 0.3s ease;
     }
     .note-box button:hover {
       background: #e8435c;
     }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Sayfa geçiş efekti */
+    #fadeLayer {
+      position: fixed;
+      inset: 0;
+      background: black; /* Siyah geçiş */
+      opacity: 0;
+      pointer-events: none;
+      z-index: 2000;
+      transition: opacity 0.8s ease;
+    }
+    #fadeLayer.show {
+      opacity: 1;
+      pointer-events: auto;
     }
   </style>
 </head>
 <body>
   <!-- Bitir butonu -->
-  <button id="finishBtn" onclick="window.location.href='bitis.html'">Bitir</button>
+  <button id="finishBtn">Bitir</button>
 
   <!-- Yapboz iframe -->
   <iframe id="jp" src="https://www.jigsawplanet.com/?rc=play&pid=0c32406005de&view=iframe" title="Yapboz"></iframe>
@@ -86,19 +104,32 @@
     <div class="note-box">
       <h2>💖 Tebrikler!</h2>
       <p>Yapbozu tamamladın. Sana söylemek istediğim küçük bir şey var...</p>
-      <button onclick="window.location.href='bitis.html'">Devam Et</button>
+      <button id="goNextBtn">Devam Et</button>
     </div>
   </div>
 
-  <script>
-  (function(){
-    const overlay = document.getElementById('overlay');
+  <!-- Geçiş katmanı -->
+  <div id="fadeLayer"></div>
 
+  <script>
+  const overlay = document.getElementById('overlay');
+  const fadeLayer = document.getElementById('fadeLayer');
+
+  function goToBitis() {
+    fadeLayer.classList.add('show');
+    setTimeout(() => {
+      window.location.href = 'bitis.html';
+    }, 800);
+  }
+
+  document.getElementById('finishBtn').addEventListener('click', goToBitis);
+  document.getElementById('goNextBtn').addEventListener('click', goToBitis);
+
+  // Yapboz tamamlanınca notu göster
+  (function(){
     window.addEventListener('message', function(event){
       try {
-        if (!event.origin || event.origin.indexOf('jigsawplanet.com') === -1) {
-          return;
-        }
+        if (!event.origin || event.origin.indexOf('jigsawplanet.com') === -1) return;
       } catch(e) { return; }
 
       const data = event.data;
