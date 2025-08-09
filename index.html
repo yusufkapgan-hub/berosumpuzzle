@@ -76,19 +76,20 @@
       to { opacity: 1; transform: scale(1); }
     }
 
-    /* Sayfa geçiş efekti */
+    /* Sayfa geçiş katmanı */
     #fadeLayer {
       position: fixed;
       inset: 0;
       background: black; /* Siyah geçiş */
-      opacity: 0;
-      pointer-events: none;
+      opacity: 1; /* İlk açılışta siyah */
       z-index: 2000;
       transition: opacity 0.8s ease;
     }
-    #fadeLayer.show {
-      opacity: 1;
-      pointer-events: auto;
+    #fadeLayer.fade-out {
+      opacity: 0; /* Açılırken görünür yap */
+    }
+    #fadeLayer.fade-in {
+      opacity: 1; /* Kapanırken siyah */
     }
   </style>
 </head>
@@ -116,7 +117,8 @@
   const fadeLayer = document.getElementById('fadeLayer');
 
   function goToBitis() {
-    fadeLayer.classList.add('show');
+    fadeLayer.classList.remove('fade-out');
+    fadeLayer.classList.add('fade-in');
     setTimeout(() => {
       window.location.href = 'bitis.html';
     }, 800);
@@ -151,6 +153,13 @@
       }
     }, false);
   })();
+
+  // Sayfa açılışında fade-in efekti
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      fadeLayer.classList.add('fade-out');
+    }, 50);
+  });
   </script>
 </body>
 </html>
