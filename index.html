@@ -5,18 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Yapboz — Oyna</title>
   <style>
-    html,body {
-      height:100%;
-      margin:0;
-      background: black;
-    }
-    iframe {
-      border:0;
-      width:100%;
-      height:100%;
-      display:block;
-    }
-    
+    html,body { height:100%; margin:0; }
+    iframe { border:0; width:100%; height:100%; display:block; }
+
     /* Sağ üst buton */
     #finishBtn {
       position: fixed;
@@ -44,7 +35,7 @@
       display: none;
       justify-content: center;
       align-items: center;
-      z-index: 999;
+      z-index: 1500;
     }
     .note-box {
       background: white;
@@ -82,26 +73,23 @@
       to { opacity: 1; transform: scale(1); }
     }
 
-    /* Geçiş ekranı (fade) */
+    /* Siyah fade-out */
     #transition {
       position: fixed;
       inset: 0;
       background: black;
       opacity: 0;
       pointer-events: none;
-      z-index: 2000;
       transition: opacity 0.8s ease;
+      z-index: 2000;
     }
-    #transition.show {
+    #transition.active {
       opacity: 1;
-      pointer-events: auto;
+      pointer-events: all;
     }
   </style>
 </head>
 <body>
-  <!-- Geçiş katmanı -->
-  <div id="transition"></div>
-
   <!-- Bitir butonu -->
   <button id="finishBtn">Bitir</button>
 
@@ -113,36 +101,33 @@
     <div class="note-box">
       <h2>💖 Tebrikler!</h2>
       <p>Yapbozu tamamladın. Sana söylemek istediğim küçük bir şey var...</p>
-      <button onclick="goToPage('bitis.html')">Devam Et</button>
+      <button id="goToEnd">Devam Et</button>
     </div>
   </div>
 
+  <!-- Siyah geçiş -->
+  <div id="transition"></div>
+
   <script>
-  // Sayfa açıldığında siyah katmanı fade-in yap
-  window.addEventListener("load", () => {
-    const transition = document.getElementById("transition");
-    transition.style.opacity = 1; // İlk başta siyah
-    setTimeout(() => {
-      transition.style.transition = "opacity 0.8s ease";
-      transition.style.opacity = 0; // Yavaşça aç
-    }, 50);
-  });
-
-  function goToPage(url) {
-    const transition = document.getElementById("transition");
-    transition.classList.add("show"); // Fade-out başlat
-    setTimeout(() => {
-      window.location.href = url; // Geçiş tamamlanınca yönlendir
-    }, 800);
-  }
-
-  document.getElementById("finishBtn").addEventListener("click", () => {
-    goToPage("bitis.html");
-  });
-
   (function(){
     const overlay = document.getElementById('overlay');
+    const transition = document.getElementById('transition');
 
+    // Bitir butonuna tıklayınca da geçiş
+    document.getElementById("finishBtn").addEventListener("click", () => {
+      overlay.style.display = "flex";
+    });
+
+    // "Devam Et" butonuna tıklayınca fade-out
+    document.getElementById("goToEnd").addEventListener("click", () => {
+      transition.classList.add("active");
+      setTimeout(() => {
+        alert("Burada bitis.html'e yönlendirme yapılabilir.");
+        // window.location.href = "bitis.html"; // Açmak istersen burayı aktifleştir
+      }, 800);
+    });
+
+    // Yapboz tamamlanınca otomatik tebrik ekranı
     window.addEventListener('message', function(event){
       try {
         if (!event.origin || event.origin.indexOf('jigsawplanet.com') === -1) {
