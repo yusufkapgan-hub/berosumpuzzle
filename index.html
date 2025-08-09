@@ -113,16 +113,17 @@
     const overlay = document.getElementById('overlay');
     const transition = document.getElementById('transition');
 
-    // Bitir butonuna tıklayınca da geçiş
+    // Bitir butonuna tıklayınca tebrik ekranı
     document.getElementById("finishBtn").addEventListener("click", () => {
       overlay.style.display = "flex";
     });
 
-    // "Devam Et" butonuna tıklayınca fade-out
+    // "Devam Et" butonuna tıklayınca fade-out ve yönlendirme
     document.getElementById("goToEnd").addEventListener("click", () => {
       transition.classList.add("active");
       setTimeout(() => {
-        window.location.href = "bitis.html"; 800);
+        window.location.href = "bitis.html";
+      }, 800);
     });
 
     // Yapboz tamamlanınca otomatik tebrik ekranı
@@ -155,4 +156,3 @@
   </script>
 </body>
 </html>
-
